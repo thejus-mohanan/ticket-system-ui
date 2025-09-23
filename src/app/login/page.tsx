@@ -167,6 +167,23 @@ export default function LoginPage() {
             </form>
           )}
           
+          {/* Sign Up Section */}
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <div className="text-center">
+              <p className="text-sm text-gray-600 mb-4">
+                Don&apos;t have an account?
+              </p>
+              <Link href="/signup">
+                <Button 
+                  variant="outline" 
+                  className="w-full border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700 font-medium"
+                >
+                  Create New Account
+                </Button>
+              </Link>
+            </div>
+          </div>
+
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Demo Instructions: Use any email + any password (except &quot;incorrect&quot;), then enter OTP: <span className="font-mono font-bold">123456</span>
