@@ -125,7 +125,7 @@ export default function NewTicketPage() {
       setTimeout(() => {
         router.push('/dashboard');
       }, 2000);
-    } catch (error) {
+    } catch  {
       toast.error('❌ Failed to create ticket. Please try again.');
     } finally {
       setIsLoading(false);
@@ -236,13 +236,12 @@ export default function NewTicketPage() {
                           <SelectItem key={priority.value} value={priority.value}>
                             <div className="flex items-center space-x-2">
                               <div
-                                className={`w-2 h-2 rounded-full ${
-                                  priority.value === 'high'
+                                className={`w-2 h-2 rounded-full ${priority.value === 'high'
                                     ? 'bg-red-500'
                                     : priority.value === 'medium'
-                                    ? 'bg-yellow-500'
-                                    : 'bg-green-500'
-                                }`}
+                                      ? 'bg-yellow-500'
+                                      : 'bg-green-500'
+                                  }`}
                               />
                               <span>{priority.label}</span>
                             </div>
@@ -256,7 +255,13 @@ export default function NewTicketPage() {
                 {/* Attachments */}
                 <div className="space-y-2">
                   <Label htmlFor="attachments">Attachments (Optional)</Label>
-                  <Input id="attachments" type="file" multiple onChange={handleFileChange} />
+                  <Input
+                    id="attachments"
+                    type="file"
+                    multiple
+                    onChange={handleFileChange}
+                    className="w-auto max-w-sm"
+                  />
                   {attachments.length > 0 && (
                     <ul className="text-sm text-gray-600 space-y-1">
                       {attachments.map((file, idx) => (
