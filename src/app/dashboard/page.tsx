@@ -37,29 +37,26 @@ export default function DashboardPage() {
 
   const sortedTickets = [...filteredTickets].sort((a, b) => {
     if (!sortConfig) return 0;
-    
+
     const aValue = a[sortConfig.key];
     const bValue = b[sortConfig.key];
-    
+
     if (aValue instanceof Date && bValue instanceof Date) {
-      return sortConfig.direction === 'asc' 
+      return sortConfig.direction === 'asc'
         ? aValue.getTime() - bValue.getTime()
         : bValue.getTime() - aValue.getTime();
     }
-    
+
     if (typeof aValue === 'string' && typeof bValue === 'string') {
-      return sortConfig.direction === 'asc' 
+      return sortConfig.direction === 'asc'
         ? aValue.localeCompare(bValue)
         : bValue.localeCompare(aValue);
     }
-    
+
     return 0;
   });
 
-  // Remove unused variables
-  // const totalPages = Math.ceil(sortedTickets.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  // const paginatedTickets = sortedTickets.slice(startIndex, startIndex + itemsPerPage);
 
   const handleSort = (key: keyof Ticket) => {
     setSortConfig(current => ({
@@ -96,16 +93,18 @@ export default function DashboardPage() {
 
     return (
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>{title}</span>
-            <Badge variant="secondary">{statusTickets.length} tickets</Badge>
+        <CardHeader className="pb-3">
+          <CardTitle className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <span className="text-lg sm:text-xl">{title}</span>
+            <Badge variant="secondary" className="w-fit">
+              {statusTickets.length} tickets
+            </Badge>
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="pt-1">
             Manage all {status.toLowerCase()} support tickets
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-0 sm:px-6">
           <div className="rounded-md border overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -117,12 +116,20 @@ export default function DashboardPage() {
                       { key: 'priority', label: 'Priority', className: 'text-center' },
                       { key: 'createdAt', label: 'Created', className: 'text-right' },
                     ].map(({ key, label, className }) => (
-                      <th 
+                      <th
                         key={key}
-                        className={`h-12 px-4 align-middle font-medium text-muted-foreground cursor-pointer hover:bg-muted/80 ${className}`}
+                        className={`h-12 px-2 sm:px-4 align-middle font-medium text-muted-foreground cursor-pointer hover:bg-muted/80 ${className}`}
                         onClick={() => handleSort(key as keyof Ticket)}
                       >
-                        <div className="flex items-center gap-1">
+                        <div
+                          className={`flex items-center gap-1 whitespace-nowrap ${
+                            className === 'text-right'
+                              ? 'justify-end'
+                              : className === 'text-center'
+                              ? 'justify-center'
+                              : 'justify-start'
+                          }`}
+                        >
                           {label}
                           {sortConfig?.key === key && (
                             <span className="text-xs">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
@@ -134,31 +141,41 @@ export default function DashboardPage() {
                 </thead>
                 <tbody>
                   {paginatedStatusTickets.map((ticket) => (
-                    <tr 
-                      key={ticket.id} 
+                    <tr
+                      key={ticket.id}
                       className="border-b hover:bg-muted/50 cursor-pointer transition-colors"
                       onClick={() => handleTicketClick(ticket)}
                     >
-                      <td className="p-4 align-middle font-medium">
-                        <div className="max-w-[200px] truncate" title={ticket.title}>
+                      <td className="p-2 sm:p-4 align-middle font-medium">
+                        <div className="max-w-[150px] sm:max-w-[200px] truncate" title={ticket.title}>
                           {ticket.title}
                         </div>
                       </td>
-                      <td className="p-4 align-middle">
+                      <td className="p-2 sm:p-4 align-middle">
                         <div>
-                          <div className="font-medium">{ticket.customer}</div>
-                          <div className="text-xs text-muted-foreground">{ticket.email}</div>
+                          <div className="font-medium whitespace-nowrap">{ticket.customer}</div>
+                          <div className="text-xs text-muted-foreground truncate max-w-[120px] sm:max-w-none">
+                            {ticket.email}
+                          </div>
                         </div>
                       </td>
-                      <td className="p-4 align-middle text-center">
-                        <Badge variant={
-                          ticket.priority === 'high' ? 'destructive' :
-                          ticket.priority === 'medium' ? 'default' : 'secondary'
-                        }>
+                      {/* ✅ Priority aligned center */}
+                      <td className="p-2 sm:p-4 align-middle text-center">
+                        <Badge
+                          variant={
+                            ticket.priority === 'high'
+                              ? 'destructive'
+                              : ticket.priority === 'medium'
+                              ? 'default'
+                              : 'secondary'
+                          }
+                          className="whitespace-nowrap"
+                        >
                           {ticket.priority}
                         </Badge>
                       </td>
-                      <td className="p-4 align-middle text-right text-muted-foreground">
+                      {/* ✅ Created aligned right */}
+                      <td className="p-2 sm:p-4 align-middle text-right text-muted-foreground whitespace-nowrap">
                         {ticket.createdAt.toLocaleDateString()}
                       </td>
                     </tr>
@@ -166,7 +183,7 @@ export default function DashboardPage() {
                 </tbody>
               </table>
             </div>
-            
+
             {statusTickets.length === 0 && (
               <div className="text-center py-12 text-muted-foreground">
                 <div className="text-lg font-medium">No tickets found</div>
@@ -176,8 +193,8 @@ export default function DashboardPage() {
           </div>
 
           {statusTickets.length > 0 && (
-            <div className="flex items-center justify-between mt-4">
-              <div className="text-sm text-muted-foreground">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
+              <div className="text-sm text-muted-foreground text-center sm:text-left">
                 Showing {Math.min(statusTickets.length, startIndex + 1)} to {Math.min(statusTickets.length, startIndex + itemsPerPage)} of {statusTickets.length} entries
               </div>
               <div className="flex gap-2">
@@ -209,18 +226,18 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Support Dashboard</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Support Dashboard</h1>
               <p className="text-sm text-gray-600">Manage customer support tickets efficiently</p>
             </div>
-            <div className="flex items-center gap-4">
-              <Link href="/newticket">
-                <Button className="bg-blue-600 hover:bg-blue-700">
+            <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
+              <Link href="/newticket" className="flex-1 sm:flex-none">
+                <Button className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
                   + New Ticket
                 </Button>
               </Link>
-              <Button variant="outline" onClick={handleLogout}>
+              <Button variant="outline" onClick={handleLogout} className="flex-1 sm:flex-none">
                 Logout
               </Button>
             </div>
@@ -228,10 +245,10 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="mb-6">
           <div className="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
-            <div className="relative flex-1 max-w-md">
+            <div className="relative w-full lg:max-w-md">
               <Input
                 type="text"
                 placeholder="Search tickets by title, customer, email..."
@@ -248,46 +265,46 @@ export default function DashboardPage() {
                 </svg>
               </div>
             </div>
-            
-            <div className="flex gap-4 text-sm">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{getTicketsByStatus('new').length}</div>
-                <div className="text-gray-600">New</div>
+
+            <div className="flex gap-4 sm:gap-6 text-sm w-full justify-between sm:justify-end">
+              <div className="text-center flex-1 sm:flex-none">
+                <div className="text-xl sm:text-2xl font-bold text-blue-600">{getTicketsByStatus('new').length}</div>
+                <div className="text-gray-600 text-xs sm:text-sm">New</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-orange-600">{getTicketsByStatus('ongoing').length}</div>
-                <div className="text-gray-600">Ongoing</div>
+              <div className="text-center flex-1 sm:flex-none">
+                <div className="text-xl sm:text-2xl font-bold text-orange-600">{getTicketsByStatus('ongoing').length}</div>
+                <div className="text-gray-600 text-xs sm:text-sm">Ongoing</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">{getTicketsByStatus('closed').length}</div>
-                <div className="text-gray-600">Closed</div>
+              <div className="text-center flex-1 sm:flex-none">
+                <div className="text-xl sm:text-2xl font-bold text-green-600">{getTicketsByStatus('closed').length}</div>
+                <div className="text-gray-600 text-xs sm:text-sm">Closed</div>
               </div>
             </div>
           </div>
         </div>
 
-        <Tabs defaultValue="new" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="new">
+        <Tabs defaultValue="new" className="space-y-4 sm:space-y-6">
+          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4">
+            <TabsTrigger value="new" className="py-2 sm:py-3">
               New Tickets ({getTicketsByStatus('new').length})
             </TabsTrigger>
-            <TabsTrigger value="ongoing">
+            <TabsTrigger value="ongoing" className="py-2 sm:py-3">
               Ongoing Tickets ({getTicketsByStatus('ongoing').length})
             </TabsTrigger>
-            <TabsTrigger value="closed">
+            <TabsTrigger value="closed" className="py-2 sm:py-3">
               Closed Tickets ({getTicketsByStatus('closed').length})
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="new">
+          <TabsContent value="new" className="mt-4 sm:mt-6">
             <StatusTable status="new" title="New Tickets" />
           </TabsContent>
 
-          <TabsContent value="ongoing">
+          <TabsContent value="ongoing" className="mt-4 sm:mt-6">
             <StatusTable status="ongoing" title="Ongoing Tickets" />
           </TabsContent>
 
-          <TabsContent value="closed">
+          <TabsContent value="closed" className="mt-4 sm:mt-6">
             <StatusTable status="closed" title="Closed Tickets" />
           </TabsContent>
         </Tabs>
